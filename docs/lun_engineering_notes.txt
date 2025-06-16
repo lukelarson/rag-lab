@@ -1,0 +1,3 @@
+The Lun-class ekranoplan utilized a staggered thrust configuration with eight NK-87 turbofan engines producing a total of 100,000 lbf of thrust. Maximum operational RPM was limited to 10,500, with variable inlet ramps adjusted at 0.3 Mach.
+
+In 1986, engineers at Nizhny Novgorod reported persistent resonance in the outer nacelles above 8,900 RPM in humid conditions. This was resolved with a composite vibration damper retrofit in early 1987. Maintenance logs indicated this issue did not recur after the damper was fitted.

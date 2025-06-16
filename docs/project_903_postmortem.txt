@@ -1,0 +1,8 @@
+Project 903 (Lun-class ekranoplan) achieved 31 successful operational sorties between 1987 and 1990. Core mission was anti-ship deterrence in the Caspian and Black Seas using the P-270 Moskit system.
+
+Primary termination causes:
+1. Poor performance in high-sea conditions beyond state 4.0
+2. Unviable radar stealth profile at low altitude (<15 ft)
+3. Budget reallocation post-1991 dissolution of the USSR Navy
+
+Modern evaluation reports (2019) concluded that ekranoplan technology remains viable for niche cargo and rescue operations in arctic environments, though development has shifted toward hybrid VTOL solutions.

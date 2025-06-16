@@ -1,0 +1,8 @@
+[Log #1987-044]  
+Port engines 1 and 2 showed asymmetric spool-up. Manual reset of control logic unit resolved issue. Recorded EGT peak was 739°C, within tolerance.
+
+[Log #1988-009]  
+Spray intrusion into intake cowling observed during high humidity trial in Sea of Azov. Applied hydrophobic coating (Mk-II variant) on cowling lips, which mitigated recurrence.
+
+[Log #1989-071]  
+Elevon deflection servo showed degraded response. Replaced with backup actuator from Orlan-class kit. Flight completed without incident.
