@@ -27,21 +27,24 @@ def load_documents(directory: str) -> List:
     Load documents from the specified directory.
     Supports both .txt and .md files.
     """
-    # Configure loaders for different file types
-    loaders = {
-        ".txt": (TextLoader, {}),
-        ".md": (UnstructuredMarkdownLoader, {})
-    }
-    
-    # Create a DirectoryLoader with the appropriate loaders
-    loader = DirectoryLoader(
-        directory,
-        glob="**/*.*",  # Load all files
-        loader_cls=loaders,
-        show_progress=True
-    )
-    
-    return loader.load()
+    documents = []
+    for root, _, files in os.walk(directory):
+        for file in files:
+            file_path = os.path.join(root, file)
+            ext = os.path.splitext(file)[1].lower()
+            try:
+                if ext == ".txt":
+                    loader = TextLoader(file_path)
+                elif ext == ".md":
+                    loader = UnstructuredMarkdownLoader(file_path)
+                else:
+                    print(f"Skipping unsupported file type: {file_path}")
+                    continue
+                docs = loader.load()
+                documents.extend(docs)
+            except Exception as e:
+                print(f"Error loading file {file_path}: {e}")
+    return documents
 
 def create_chunks(documents: List, chunk_size: int = 1000, chunk_overlap: int = 200):
     """
@@ -76,8 +79,8 @@ def setup_qa_chain(vector_store):
     """
     # Custom prompt template
     prompt_template = """Use the following pieces of context to answer the question at the end. 
-    If you don't know the answer, just say that you don't know, don't try to make up an answer.
-    Use three sentences maximum and keep the answer concise.
+    If you don't know the answer, say "I don't know". Do NOT try to make up an answer.
+    Use three sentences maximum and keep the answer concise and factual.
 
     Context: {context}
 
@@ -118,23 +121,30 @@ def main():
     if os.path.exists("faiss_index"):
         print("Loading existing vector store...")
         embeddings = OpenAIEmbeddings(
-            model="text-embedding-3-small",
-            openai_api_key=os.getenv("OPENAI_API_KEY")
+             model="text-embedding-3-small",
+             openai_api_key=os.getenv("OPENAI_API_KEY")
         )
-        vector_store = FAISS.load_local("faiss_index", embeddings)
+        try:
+            vector_store = FAISS.load_local("faiss_index", embeddings, allow_dangerous_deserialization=True)
+        except (ValueError, FileNotFoundError) as e:
+            print(f"Error loading vector store: {e}")
+            print("Creating new vector store...")
+            documents = load_documents("docs")
+            chunks = create_chunks(documents)
+            vector_store = create_vector_store(chunks)
+            vector_store.save_local("faiss_index")
     else:
         print("Loading documents...")
         documents = load_documents("docs")
-        
-        if not documents:
-            print("No documents found in the docs/ directory. Please add some .txt or .md files.")
-            return
-        
         print("Creating chunks...")
         chunks = create_chunks(documents)
-        
         print("Creating vector store...")
+        embeddings = OpenAIEmbeddings(
+             model="text-embedding-3-small",
+             openai_api_key=os.getenv("OPENAI_API_KEY")
+        )
         vector_store = create_vector_store(chunks)
+        vector_store.save_local("faiss_index")
     
     # Set up QA chain
     qa_chain = setup_qa_chain(vector_store)
